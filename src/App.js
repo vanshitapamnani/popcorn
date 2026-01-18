@@ -1,7 +1,7 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import StarRating from "./starRating";
 
-const tempMovieData112 = [
+const tempMovieData = [
   {
     imdbID: "tt1375666",
     Title: "Inception",
@@ -342,12 +342,17 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   }
   useEffect(
     function () {
-      document.addEventListener("keydown", function (e) {
+      function callback(e) {
         if (e.code === "Escape") {
           onCloseMovie();
           console.log("CLOSING");
         }
-      });
+      }
+      document.addEventListener("keydown", callback);
+
+      return function () {
+        document.removeEventListener("Keydown", callback);
+      };
     },
     [onCloseMovie]
   );
