@@ -132,6 +132,7 @@ export default function App() {
         setError("");
         return;
       }
+      handleCloseMovie();
       fetchMovies();
       //CLEANING UP
 
@@ -345,7 +346,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       function callback(evt) {
         if (evt.code === "Escape") {
           onCloseMovie();
-          console.log("CLOSING");
         }
       }
       document.addEventListener("keydown", callback);
