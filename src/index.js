@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./App";
+import App from "./App copy";
 import StarRating from "./starRating";
 
 // function Test() {
@@ -26,5 +26,5 @@ root.render(
     <App />
 
     {/* <Test /> */}
-  </React.StrictMode>
+  </React.StrictMode>,
 );

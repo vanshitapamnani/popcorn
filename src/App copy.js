@@ -1,6 +1,53 @@
 import { useEffect, useState } from "react";
 import StarRating from "./starRating";
 
+// const tempMovieData = [
+//   {
+//     imdbID: "tt1375666",
+//     Title: "Inception",
+//     Year: "2010",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+//   },
+//   {
+//     imdbID: "tt0133093",
+//     Title: "The Matrix",
+//     Year: "1999",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
+//   },
+//   {
+//     imdbID: "tt6751668",
+//     Title: "Parasite",
+//     Year: "2019",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
+//   },
+// ];
+
+// const tempWatchedData = [
+//   {
+//     imdbID: "tt1375666",
+//     Title: "Inception",
+//     Year: "2010",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+//     runtime: 148,
+//     imdbRating: 8.8,
+//     userRating: 10,
+//   },
+//   {
+//     imdbID: "tt0088763",
+//     Title: "Back to the Future",
+//     Year: "1985",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
+//     runtime: 116,
+//     imdbRating: 8.5,
+//     userRating: 9,
+//   },
+// ];
+
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
@@ -9,11 +56,33 @@ const KEY = "b7fafa69";
 export default function App() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
+  // const tempQuery = "interstellar";
   const [selectedId, setSelectedId] = useState(null);
+  const [watched, setWatched] = useState(() => {
+    const stored = localStorage.getItem("watched");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  // Dependency in useEffect::::----
+  // useEffect(function () {
+  //   console.log("After the initial render");
+  // }, []);
+
+  // useEffect(function () {
+  //   console.log("After every render");
+  // });
+
+  // console.log("During the render");
+
+  // useEffect(
+  //   function () {
+  //     console.log("D");
+  //   },
+  //   [query] // this will run every time query state will render.
+  // );
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -23,8 +92,21 @@ export default function App() {
   }
 
   function handleAddWatched(movie) {
+    console.log("movie added", movie);
     setWatched((watched) => [...watched, movie]);
+    //Local storage initalisation - either here or useEffect
+    //again using [...watched] below because of stale state
+    // localStorage.setItem("watched", JSON.stringify([...watched, movie]));
+    // setWatched((prev) => {
+    //   if (prev.some((m) => m.imdbID === movie.imdbID)) return prev;
+    //   return [...prev, movie];
+    // });
   }
+  useEffect(() => {
+    console.log("watched state changed:", watched);
+
+    localStorage.setItem("watched", JSON.stringify(watched));
+  }, [watched]);
 
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
@@ -222,7 +304,7 @@ function MovieList({ movies, onSelectMovie }) {
   return (
     <ul className="list list-movies">
       {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} onSelectMovie={onSelectMovie} />
+        <Movie key={movie.imdbID} movie={movie} onSelectMovie={onSelectMovie} />
       ))}
     </ul>
   );
@@ -245,8 +327,8 @@ function Movie({ movie, onSelectMovie }) {
 function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [userRating, setUserRating] = useState("");
-  const isWatched = watched.map((movie) => movie.imdbId).includes(selectedId);
+  const [userRating, setUserRating] = useState(0);
+  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   const watchedUserrating = watched.find(
     (movie) => movie.imdbID === selectedId,
   )?.userRating;
@@ -264,15 +346,23 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   } = movie;
 
   function handleAdd() {
+    console.log("title:", title);
+    console.log("poster:", poster);
+    console.log("runtime:", runtime);
+    console.log("imdbRating:", imdbRating);
+    console.log("userRating:", userRating);
+
     const newWatchedMovie = {
-      imdbId: selectedId,
+      imdbID: selectedId, //.....
       title,
       year,
       poster,
       imdbRating: Number(imdbRating),
-      runtime: Number(runtime.split(" ").at(0)),
+      runtime: Number(runtime?.split(" ").at(0)),
       userRating,
     };
+    console.log("full object:", newWatchedMovie);
+
     onAddWatched(newWatchedMovie);
     onCloseMovie();
   }
@@ -286,7 +376,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       document.addEventListener("keydown", callback);
 
       return function () {
-        document.removeEventListener("Keydown", callback);
+        document.removeEventListener("keydown", callback);
       };
     },
     [onCloseMovie],
@@ -406,12 +496,13 @@ function WatchedSummary({ watched }) {
   );
 }
 function WatchedMovieList({ watched, onDeleteWatched }) {
+  console.log("watched array:", watched);
   return (
     <ul className="list">
       {watched.map((movie) => (
         <WatchedMovie
-          movie={movie}
           key={movie.imdbID}
+          movie={movie}
           onDeleteWatched={onDeleteWatched}
         />
       ))}
