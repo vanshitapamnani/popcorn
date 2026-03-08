@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/vanshitapamnani/popcorn.git/static/css/main.9a4eb742.css",
-    "main.js": "/vanshitapamnani/popcorn.git/static/js/main.537113a0.js",
-    "index.html": "/vanshitapamnani/popcorn.git/index.html",
-    "main.9a4eb742.css.map": "/vanshitapamnani/popcorn.git/static/css/main.9a4eb742.css.map",
-    "main.537113a0.js.map": "/vanshitapamnani/popcorn.git/static/js/main.537113a0.js.map"
+    "main.css": "/popcorn/static/css/main.9a4eb742.css",
+    "main.js": "/popcorn/static/js/main.537113a0.js",
+    "index.html": "/popcorn/index.html",
+    "main.9a4eb742.css.map": "/popcorn/static/css/main.9a4eb742.css.map",
+    "main.537113a0.js.map": "/popcorn/static/js/main.537113a0.js.map"
   },
   "entrypoints": [
     "static/css/main.9a4eb742.css",
